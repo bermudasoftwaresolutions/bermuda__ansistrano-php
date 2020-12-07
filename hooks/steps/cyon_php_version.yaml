@@ -1,0 +1,5 @@
+---
+- name: ARTACK | set cyon php version
+  template:
+    src: ../../templates/cyon_php_version.j2
+    dest: "{{ artack_cyon_php_version_htaccess_path }}/.htaccess"

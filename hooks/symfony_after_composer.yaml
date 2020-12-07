@@ -1,0 +1,3 @@
+---
+- include_tasks: "steps/contao3_composer.yaml"
+  when: artack_run_contao3

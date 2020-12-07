@@ -1,0 +1,6 @@
+# from galaxy
+- src: ansistrano.deploy
+
+- src: ansistrano.rollback
+
+- src: cbrunnkvist.ansistrano-symfony-deploy

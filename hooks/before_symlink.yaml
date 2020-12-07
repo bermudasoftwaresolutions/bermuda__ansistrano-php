@@ -1,0 +1,9 @@
+---
+- include_tasks: "steps/htpasswd.yaml"
+  when: artack_run_htpasswd
+
+- include_tasks: "steps/cyon_php_version.yaml"
+  when: artack_run_cyon_php_version
+
+- include_tasks: "steps/opcache_clear.yaml"
+  when: artack_run_opcache_clear

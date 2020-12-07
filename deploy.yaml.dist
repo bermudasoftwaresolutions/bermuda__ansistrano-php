@@ -1,0 +1,96 @@
+---
+- name: DEPLOY | ARTACK name-here | stage-here
+  hosts: all # or a host-group
+  vars:
+
+    # Variables used by artack customizations
+    artack_php_binary: "/path/to/php"
+    artack_run_opcache_clear: false
+    artack_run_htpasswd: false
+    artack_run_cyon_php_version: false
+    artack_run_contao3: false
+
+    git_default_branch: master
+
+    artack_cachetool_self_update: true
+    artack_cachetool_php_binary: "{{ artack_php_binary }}"
+    artack_cachetool_path: "{{ ansistrano_deploy_to }}/cachetool.phar"
+    artack_cachetool_type: tbc # use one of: web, fcgi
+    artack_cachetool_fcgi_path: "/path/to/fcgi/socket"
+    artack_cachetool_web_path: "{{ ansistrano_deploy_to }}/current/public"
+    artack_cachetool_web_url: http://www.example.com
+
+    artack_htpasswd_name: ARTACK development
+    artack_htpasswd_user: artack
+    artack_htpasswd_pass: artack
+    artack_htpasswd_path: "{{ ansistrano_release_path.stdout }}/public/.htaccess"
+
+    artack_cyon_php_version: 74 # chose from 71, 72, 73 and 74
+    artack_cyon_php_version_htaccess_path: "{{ ansistrano_release_path.stdout }}"
+
+    # Variables uses by symfony
+    symfony_php_path: "{{ artack_php_binary }}"
+    symfony_run_composer: true
+    symfony_run_assets_install: false
+    symfony_run_assetic_dump: false
+    symfony_run_cache_clear_and_warmup: false
+
+    # Variables used for the deployment process
+    ansistrano_deploy_from: "{{ playbook_dir }}"
+    ansistrano_deploy_to: "/var/www/my-app"
+    ansistrano_keep_releases: 5
+    ansistrano_ensure_shared_paths_exist: yes
+    ansistrano_ensure_basedirs_shared_files_exist: yes
+
+    # Variables related to ansistrano
+    ansistrano_allow_anonymous_stats: no
+
+    # Variables used in the Git deployment strategy
+    ansistrano_deploy_via: "git"
+    ansistrano_git_repo: ssh://git@github.com:USERNAME/REPO.git
+    ansistrano_git_branch: "{{ git_branch | default(git_default_branch) }}"
+
+    # Variables related to the project shared files/folders
+    # Example:
+    # ansistrano_shared_paths:
+    #   - path/to/first-dir
+    #   - path/next-dir
+    # ansistrano_shared_files:
+    #   - my-file.txt
+    #   - path/to/file.txt
+    ansistrano_shared_paths: []
+    ansistrano_shared_files: []
+
+    # Hooks: custom tasks if you need them
+#    ansistrano_before_setup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-setup-tasks.yml"
+#    ansistrano_after_setup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-setup-tasks.yml"
+#    ansistrano_before_update_code_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-update-code-tasks.yml"
+#    ansistrano_after_update_code_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-update-code-tasks.yml"
+#    ansistrano_before_symlink_shared_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-symlink-shared-tasks.yml"
+#    ansistrano_after_symlink_shared_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-symlink-shared-tasks.yml"
+#    ansistrano_before_symlink_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-symlink-tasks.yml"
+#    ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-symlink-tasks.yml"
+#    ansistrano_before_cleanup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-cleanup-tasks.yml"
+#    ansistrano_after_cleanup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-cleanup-tasks.yml"
+
+    ansistrano_before_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/before_symlink.yaml"
+    ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/after_symlink.yaml"
+    ansistrano_symfony_after_composer_tasks_file: "{{ playbook_dir }}/deployment/hooks/symfony_after_composer.yaml"
+
+  # used to ask for the branch to be deployed
+  vars_prompt:
+    - name: git_branch
+      prompt: "Enter a branch to deploy"
+      default: "{{ git_default_branch }}"
+      private: no
+
+  # used for deployment on cyon
+#  environment:
+#    TMPDIR: "{{ ansible_env.HOME }}/.ansible/tmp"
+#    TMP: "{{ ansible_env.HOME }}/.ansible/tmp"
+#    TEMP: "{{ ansible_env.HOME }}/.ansible/tmp"
+
+  roles:
+    # Choose one of the following
+    - { role: ansistrano.deploy }
+    - { role: cbrunnkvist.ansistrano-symfony-deploy }
