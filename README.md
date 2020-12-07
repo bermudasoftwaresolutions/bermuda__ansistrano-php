@@ -7,7 +7,7 @@
 *needs to be done once*
 
 ```bash
-git submodule add https://github.com/artack/ansistrano-php.git deployment
+git submodule add https://github.com/bermudasoftwaresolutions/bermuda__ansistrano-php.git deployment
 ```
 
 ### Copy dist-files to your project
